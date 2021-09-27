@@ -19,7 +19,11 @@ const Application = () => {
   const ref = useRef(null)
   const [ctx, setCtx] = useState(null)
   const [fluidMatrix, setFluidMatrix] = useState()
+  const fluidMatrixRef = useRef()
+  fluidMatrixRef.current = fluidMatrix;
   const [sources, setSources] = useState([])
+  const sourcesRef = useRef();
+  sourcesRef.current = sources;
 
   useEffect(() => {
     const c = ref.current.getContext("2d")
@@ -31,13 +35,11 @@ const Application = () => {
         array.push({...Particle})
       matrix.push([...array])
     }
-    setSources([{y: height/2, x: width/2}])
-    matrix[Math.round(height/2)][Math.round(width / 2)].density = 1
     setFluidMatrix(matrix)
   }, [])
 
   const renderCanvas = () => {
-    fluidMatrix.forEach( (row, rowIndex) => {
+    fluidMatrixRef.current.forEach( (row, rowIndex) => {
       row.forEach( (col, colIndex) => {
         let a = col.density
         ctx.fillStyle = "rgba(0,0,0," + a + ")"
@@ -63,6 +65,7 @@ const Application = () => {
 
   const addSources = (temp, s) => {
     s.forEach((location) => {
+      console.log(location)
       temp[location.y][location.x].density = 1;
     })
     return temp
@@ -72,13 +75,22 @@ const Application = () => {
 
   }
 
+  const handleAddSources = (e) => {
+    const {offsetTop, offsetLeft} = e.target;
+    const {clientX, clientY} = e;
+    const tempSource = {y: Math.round((clientX - offsetLeft )/ pixelSize), x: Math.round((clientY - offsetTop) / pixelSize)}
+    const temp = [...sources];
+    temp.push(tempSource)
+    setSources(temp)
+  }
+
   const loop = () => {
-    const temp = [...fluidMatrix]
-    const s = [...sources]
+    const temp = [...(fluidMatrixRef.current)]
+    const s = [...(sourcesRef.current)]
     renderCanvas()
     if(s.length !== 0) {
+      addSources(temp, [...s])
       setSources([])
-      addSources(temp, s)
     }
     calcDiffusion(temp)
     calcAdvection()
@@ -92,11 +104,10 @@ const Application = () => {
     }
   }, [ctx])
 
-
   return (
     <div>
       <div>Fluid Simulation</div>
-      <canvas ref={ref} width={width * pixelSize} height={height * pixelSize} className="fluidContainer"></canvas>
+      <canvas ref={ref} width={width * pixelSize} height={height * pixelSize} className="fluidContainer" onClick={handleAddSources}></canvas>
     </div>
   )
 }
