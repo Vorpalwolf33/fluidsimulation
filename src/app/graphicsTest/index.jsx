@@ -51,13 +51,6 @@ const Graphics = () => {
     return tempMatrix;
   }
 
-  // useEffect(() => {
-  //   for(let i = 1; i <= 3; ++i) {
-  //     const matrixSize = 1 * Math.pow(10, i)
-      
-  //   }
-  // }, [])
-
   useEffect(() => {
     if(matrixSize) {
       const matrix1 = generateMatrix(matrixSize, matrixSize)
