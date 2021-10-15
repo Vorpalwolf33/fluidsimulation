@@ -1,7 +1,7 @@
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import "./App.scss";
 import Application from './app/homePage';
-import Graphics from './app/graphicsTest';
+import Graphics from './app/gpuSim';
 
 function App() {
   return (
